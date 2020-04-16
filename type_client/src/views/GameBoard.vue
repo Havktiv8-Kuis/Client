@@ -3,7 +3,7 @@
     <div class="game-board">
       <div class="row">
         <!-- ini cardnya buat di looping -->
-        <Card/>
+        <Card v-for="user in userdata" :key="user.username" :user="user" />
         <!-- -------- -->
       </div>
       <div class="text-box">
@@ -21,22 +21,53 @@
           </div>
         </div>
       </form>
+      <button @click="rightAnswer">Test</button>
+      <button @click.prevent="logout">logout</button>
     </div>
   </div>
 </template>
 
 <script>
 import Card from '../components/Card'
+import socket from '../config/socket' 
 export default {
   name: 'GameBoard',
   components: {
     Card
   },
-  created() {
-    if (!localStorage.username) {
-      this.$router.push('/')
-    }
+  data () {
+      return {
+          userdata: []
+      }
+  },created () {
+      socket.on('user-join',(data)=>{
+            this.userdata = data
+            console.log(this.userdata)
+        })
+        if(!localStorage.username){
+            this.$router.push('/')
+        }
+  },
+  methods: {
+      logout () {
+          const name = localStorage.username
+          socket.emit('exit',name)
+            localStorage.removeItem('username')
+            this.$router.push('/')
+        },
+        rightAnswer () {
+            this.userdata.forEach(element => {
+                if(localStorage.username == element.username){
+                    element.score += 10
+                }
+            });
+                    socket.emit('correct',this.userdata)
+                    socket.on('user-join',(data)=>{
+                        this.userdata = data
+                    })
+        }
   }
+  
 }
 </script>
 
@@ -53,9 +84,10 @@ export default {
 
 .row{
   width: 100%;
-  height: 45%;
+  height: 50%;
   margin: 0;
   display: flex;
+  justify-content: center;
 }
 
 .text-box{
