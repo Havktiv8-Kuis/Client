@@ -3,31 +3,8 @@
     <div class="game-board">
       <div class="row">
         <!-- ini cardnya buat di looping -->
-        <div class="card">
-          <img src="../assets/user.svg" alt="user-image">
-          <h3>Player 1</h3>
-          <h5>Score:</h5>
-          <p>70</p>
-        </div>
+        <Card v-for="user in userdata" :key="user.username" :user="user" />
         <!-- -------- -->
-        <div class="card">
-          <img src="../assets/user.svg" alt="user-image">
-          <h3>Player 2</h3>
-          <h5>Score:</h5>
-          <p>50</p>
-        </div>
-        <div class="card">
-          <img src="../assets/user.svg" alt="user-image">
-          <h3>Player 3</h3>
-          <h5>Score:</h5>
-          <p>10</p>
-        </div>
-        <div class="card">
-          <img src="../assets/user.svg" alt="user-image">
-          <h3>Player 4</h3>
-          <h5>Score:</h5>
-          <p>30</p>
-        </div>
       </div>
       <div class="text-box">
         <p>
@@ -44,34 +21,49 @@
           </div>
         </div>
       </form>
+      <button @click="rightAnswer">Test</button>
+      <button @click.prevent="logout">logout</button>
     </div>
   </div>
 </template>
 
 <script>
+import Card from '../components/Card'
+import socket from '../config/socket' 
 export default {
   name: 'GameBoard',
+  components: {
+    Card
+  },
   data () {
-        return {
-            userdata: []
-        }
-    },
-  created () {
-        if(!localStorage.username) {
-            this.$router.push('/')
-        }else{
-            socket.on('user-join',(data)=>{
-                this.userdata = data
-            })
-        }
-    },
+      return {
+          userdata: []
+      }
+  },
   methods: {
-        logout () {
-            localStorage.removeItem('username')
+      logout () {
+        //   let uname = localStorage.username
             this.$router.push('/')
-            socket.emit('disconnect')
+            localStorage.removeItem('username')
+        },
+        rightAnswer () {
+            this.userdata.forEach(element => {
+                if(localStorage.username == element.username){
+                    element.score += 10
+                }
+            });
+                    socket.emit('correct',this.userdata)
+                    socket.on('correct',(data)=>{
+                        this.userdata = data
+                    })
         }
-    }
+  },
+  created () {
+      socket.on('user-join',(data)=>{
+            this.userdata = data
+            console.log(this.userdata)
+        })
+  }
 }
 </script>
 
@@ -88,9 +80,10 @@ export default {
 
 .row{
   width: 100%;
-  height: 45%;
+  height: 50%;
   margin: 0;
   display: flex;
+  justify-content: center;
 }
 
 .text-box{
@@ -105,42 +98,6 @@ export default {
   font-size: 25px;
   text-align: left;
   color: #fce669;
-}
-
-.card{
-  width: 12rem;
-  height: 100%;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  border: 3px ;
-  border-style: solid;
-  border-color: #ffc150;
-  border-radius: 20px;
-  margin-right: 30px;
-  background: #fce669;
-}
-
-.card img{
-  width: 100px;
-  margin-bottom: 15px;
-}
-
-.card h3{
-  color: #cb4a39;
-}
-
-.card h5{
-  margin: 0;
-  color: #9e6c36;
-}
-
-.card p{
-  font-size: 4rem;
-  margin: 0;
-  color: #774b30;
 }
 
 </style>

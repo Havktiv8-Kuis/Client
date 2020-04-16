@@ -45,7 +45,8 @@ export default {
   methods: {
     login () {
       const userData = {
-        username: this.username
+        username: this.username,
+        score: 0
       }
       localStorage.setItem('username', this.username)
       socket.emit('user-join', userData)

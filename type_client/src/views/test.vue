@@ -1,9 +1,9 @@
 <template>
-  <div class="game">
-    <h1>This is game page</h1>
+  <div class="test">
+    <h1>This is test page</h1>
     <h3>User list</h3>
     <div v-for="username in userdata" :key="username">
-    <p>{{username}}</p>
+    <p>{{username.username}}</p>
     </div>
     <button @click="logout">Log out</button>
   </div>
@@ -11,15 +11,10 @@
 <script>
 import socket from '../config/socket'
 export default {
-    name: 'game',
+    name: 'test',
     data () {
         return {
             userdata: []
-        }
-    },
-    created () {
-        if(!localStorage.username) {
-            this.$router.push('/')
         }
     },
     methods: {
