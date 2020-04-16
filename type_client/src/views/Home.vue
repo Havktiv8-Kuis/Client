@@ -40,15 +40,16 @@ export default {
     }
   },
   components: {
+
   },
   methods: {
     login () {
       const userData = {
-        name: this.username
+        username: this.username
       }
       localStorage.setItem('username', this.username)
       socket.emit('user-join', userData)
-      this.$router.push('/game')
+      this.$router.push('game')
     }
   }
 }
