@@ -46,8 +46,36 @@ export default {
       const userData = {
         name: this.username
       }
-      localStorage.setItem('username', this.username)
       socket.emit('user-join', userData)
+      socket.on('user-list', (condition) => {
+        if (condition) {
+          localStorage.setItem('username', this.username)
+          this.$router.push('/game')
+        } else {
+          console.log('user already exist')
+        }
+      })
+    },
+    checkUser () {
+      socket.on('user-list', (data) => {
+        const user = data.find(el => el === this.username)
+        console.log(user)
+        if (!user) {
+          const userData = {
+            name: this.username
+          }
+          localStorage.setItem('username', this.username)
+          socket.emit('user-join', userData)
+          this.$router.push('/game')
+        }
+        else {
+          console.log('Username already exist')
+        }
+      })
+    }
+  },
+  created() {
+    if(localStorage) {
       this.$router.push('/game')
     }
   }

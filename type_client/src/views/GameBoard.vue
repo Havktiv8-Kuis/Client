@@ -31,6 +31,11 @@ export default {
   name: 'GameBoard',
   components: {
     Card
+  },
+  created() {
+    if (!localStorage.username) {
+      this.$router.push('/')
+    }
   }
 }
 </script>
