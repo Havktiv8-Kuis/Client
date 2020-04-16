@@ -44,12 +44,18 @@ export default {
   },
   methods: {
     login () {
-      const userData = {
+      const userdata = {
         username: this.username,
         score: 0
       }
-      localStorage.setItem('username', this.username)
-      socket.emit('user-join', userData)
+        socket.emit('user-join', userdata)
+        localStorage.setItem('username', this.username)
+        this.$router.push('game')
+         
+    }
+  },
+  created() {
+    if(localStorage.username) {
       this.$router.push('game')
     }
   }

@@ -39,12 +39,21 @@ export default {
       return {
           userdata: []
       }
+  },created () {
+      socket.on('user-join',(data)=>{
+            this.userdata = data
+            console.log(this.userdata)
+        })
+        if(!localStorage.username){
+            this.$router.push('/')
+        }
   },
   methods: {
       logout () {
-        //   let uname = localStorage.username
-            this.$router.push('/')
+          const name = localStorage.username
+          socket.emit('exit',name)
             localStorage.removeItem('username')
+            this.$router.push('/')
         },
         rightAnswer () {
             this.userdata.forEach(element => {
@@ -53,17 +62,12 @@ export default {
                 }
             });
                     socket.emit('correct',this.userdata)
-                    socket.on('correct',(data)=>{
+                    socket.on('user-join',(data)=>{
                         this.userdata = data
                     })
         }
-  },
-  created () {
-      socket.on('user-join',(data)=>{
-            this.userdata = data
-            console.log(this.userdata)
-        })
   }
+  
 }
 </script>
 
