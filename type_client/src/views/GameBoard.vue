@@ -8,16 +8,16 @@
       </div>
       <div class="text-box">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          {{word}}
         </p>
       </div>
       <form>
         <div class="form-row align-items-center justify-content-center">
           <div class="col-md-10">
-            <input type="text" class="form-control"       id="inlineFormInputName" placeholder="Input your answer here buddy!">
+            <input type="text" class="form-control" id="inlineFormInputName" placeholder="Input your answer here buddy!" v-model="answer">
           </div>
           <div class="col-auto my-1">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" @click.prevent="checkWord">Submit</button>
           </div>
         </div>
       </form>
@@ -26,16 +26,39 @@
 </template>
 
 <script>
+import socket from '../config/socket'
 import Card from '../components/Card'
 export default {
   name: 'GameBoard',
   components: {
     Card
   },
+  data () {
+    return {
+      word: '',
+      answer: ''
+    }
+  },
+  methods: {
+    getWord () {
+      socket.emit('get-word')
+      socket.on('get-word', (data) => {
+        this.word = data
+      })
+    },
+    checkWord () {
+      if (this.word.toLowerCase() === this.answer.toLowerCase()) {
+        this.getWord()
+      } else {
+        console.log('Wrong answer')
+      }
+    }
+  },
   created() {
     if (!localStorage.username) {
       this.$router.push('/')
     }
+    this.getWord()
   }
 }
 </script>
