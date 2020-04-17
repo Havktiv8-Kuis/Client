@@ -51,7 +51,7 @@ export default {
       })
     },
     checkWord () {
-      if (this.word.toLowerCase() === this.answer.toLowerCase()) {
+      if (this.word.toLowerCase() === this.answer.toLowerCase() && this.word != '') {
         this.getWord()
       } else {
         console.log('Wrong answer')
@@ -86,7 +86,9 @@ export default {
       if(!localStorage.username){
         this.$router.push('/')
       }
-      this.getWord()
+      if (this.userdata.length > 1) {
+        this.getWord()
+      }
     }
   }  
 }
