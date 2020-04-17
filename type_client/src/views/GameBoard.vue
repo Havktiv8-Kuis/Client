@@ -57,8 +57,9 @@ export default {
   created() {
     if (!localStorage.username) {
       this.$router.push('/')
+    } else {
+      this.getWord()
     }
-    this.getWord()
   }
 }
 </script>

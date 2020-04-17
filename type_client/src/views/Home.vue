@@ -58,7 +58,7 @@ export default {
     }
   },
   created() {
-    if(localStorage) {
+    if(localStorage.username) {
       this.$router.push('/game')
     }
   }
