@@ -8,20 +8,20 @@
       </div>
       <div class="text-box">
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          {{sentence}}
         </p>
       </div>
       <form>
         <div class="form-row align-items-center justify-content-center">
           <div class="col-md-10">
-            <input type="text" class="form-control"       id="inlineFormInputName" placeholder="Input your answer here buddy!">
+            <input type="text" class="form-control"       id="inlineFormInputName" placeholder="Input your answer here buddy!" v-model="answer">
           </div>
           <div class="col-auto my-1">
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary" @click.prevent="checkAnswer" >Submit</button>
           </div>
         </div>
       </form>
-      <button @click="rightAnswer">Test</button>
+      <!-- <button @click="rightAnswer">Test</button> -->
       <button @click.prevent="logout">logout</button>
     </div>
   </div>
@@ -37,13 +37,18 @@ export default {
   },
   data () {
       return {
-          userdata: []
+          userdata: [],
+          sentence: '',
+          word: '',
+          answer: ''
       }
   },created () {
+
       socket.on('user-join',(data)=>{
             this.userdata = data
             console.log(this.userdata)
         })
+        this.getWord()
         if(!localStorage.username){
             this.$router.push('/')
         }
@@ -55,16 +60,27 @@ export default {
             localStorage.removeItem('username')
             this.$router.push('/')
         },
-        rightAnswer () {
+        checkAnswer () {
+          if (this.word.toLowerCase() === this.answer.toLowerCase()) {
             this.userdata.forEach(element => {
-                if(localStorage.username == element.username){
-                    element.score += 10
+                if(localStorage.username == element.username) {
+                  element.score += 10
                 }
             });
-                    socket.emit('correct',this.userdata)
-                    socket.on('user-join',(data)=>{
-                        this.userdata = data
-                    })
+            socket.emit('correct',this.userdata)
+            socket.on('user-join',(data)=>{
+                this.userdata = data
+            })
+            this.getWord()
+          }
+        },
+        getWord () {
+          this.answer = ''
+          socket.emit('get-word')
+          socket.on('get-word', (data) => {
+          this.word = data.answer
+          this.sentence = data.sentence
+          })
         }
   }
   
