@@ -49,8 +49,15 @@ export default {
         score: 0
       }
         socket.emit('user-join', userdata)
-        localStorage.setItem('username', this.username)
-        this.$router.push('game')
+        socket.on('user-list',(condition)=>{
+            if(condition){
+                localStorage.setItem('username', this.username)
+                this.$router.push('game')
+            }else{
+                console.log('Username already exist')
+            }
+        })
+        
          
     }
   },
