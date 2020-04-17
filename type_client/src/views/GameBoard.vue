@@ -14,7 +14,7 @@
       <form>
         <div class="form-row align-items-center justify-content-center">
           <div class="col-md-10">
-            <input type="text" class="form-control"       id="inlineFormInputName" placeholder="Input your answer here buddy!" v-model="answer">
+            <input type="text" class="form-control" id="inlineFormInputName" placeholder="Input your answer here buddy!" v-model="answer">
           </div>
           <div class="col-auto my-1">
             <button type="submit" class="btn btn-primary" @click.prevent="checkAnswer" >Submit</button>
@@ -28,62 +28,86 @@
 </template>
 
 <script>
+import socket from '../config/socket'
 import Card from '../components/Card'
-import socket from '../config/socket' 
+// import socket from '../config/socket' 
 export default {
   name: 'GameBoard',
   components: {
     Card
   },
   data () {
-      return {
-          userdata: [],
-          sentence: '',
-          word: '',
-          answer: ''
-      }
-  },created () {
-
-      socket.on('user-join',(data)=>{
-            this.userdata = data
-            console.log(this.userdata)
-        })
-        this.getWord()
-        if(!localStorage.username){
-            this.$router.push('/')
-        }
+    return {
+      word: '',
+      answer: '',
+      userdata: [],
+      sentence: '',
+    }
   },
   methods: {
-      logout () {
-          const name = localStorage.username
-          socket.emit('exit',name)
-            localStorage.removeItem('username')
-            this.$router.push('/')
-        },
-        checkAnswer () {
-          if (this.word.toLowerCase() === this.answer.toLowerCase()) {
-            this.userdata.forEach(element => {
-                if(localStorage.username == element.username) {
-                  element.score += 10
-                }
-            });
-            socket.emit('correct',this.userdata)
-            socket.on('user-join',(data)=>{
-                this.userdata = data
-            })
-            this.getWord()
+    getWord () {
+      this.answer = ''
+      socket.emit('get-word')
+      socket.on('get-word', (data) => {
+        this.word = data
+        this.sentence = data.sentence
+      })
+    },
+    // checkWord () {
+    //   if (this.word.toLowerCase() === this.answer.toLowerCase() && this.word != '') {
+    //     this.getWord()
+    //   } else {
+    //     console.log('Wrong answer')
+    //   }
+    // },
+    logout () {
+      const name = localStorage.username
+      socket.emit('exit',name)
+        localStorage.removeItem('username')
+        // localStorage.clear()
+        this.$router.push('/')
+    },
+    checkAnswer () {
+      if (this.word.answer.toLowerCase() === this.answer.toLowerCase()) {
+        this.userdata.forEach(element => {
+          if(localStorage.username == element.username) {
+            element.score += 10
           }
-        },
-        getWord () {
-          this.answer = ''
-          socket.emit('get-word')
-          socket.on('get-word', (data) => {
-          this.word = data.answer
-          this.sentence = data.sentence
-          })
+        });
+        socket.emit('correct',this.userdata)
+        socket.on('user-join',(data)=>{
+            this.userdata = data
+        })
+        this.getWord()
+      } else {
+        console.log('Wrong answer')
+      }
+    },
+    rightAnswer () {
+      this.userdata.forEach(element => {
+        if(localStorage.username == element.username){
+            element.score += 10
         }
+      });
+      socket.emit('correct',this.userdata)
+      socket.on('user-join',(data)=>{
+          this.userdata = data
+      })
+    }
+  },
+  created() {
+    if (!localStorage.username) {
+      this.$router.push('/')
+    } else {
+      socket.on('user-join',(data)=>{
+        this.userdata = data
+        console.log(this.userdata)
+        if (this.userdata.length > 1) {
+          this.getWord()
+        }
+      })
+    }
   }
-  
 }
 </script>
 

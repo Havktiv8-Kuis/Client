@@ -44,26 +44,24 @@ export default {
   },
   methods: {
     login () {
-      const userdata = {
+      const userData = {
         username: this.username,
         score: 0
       }
-        socket.emit('user-join', userdata)
-        socket.on('user-list',(condition)=>{
-            if(condition){
-                localStorage.setItem('username', this.username)
-                this.$router.push('game')
-            }else{
-                console.log('Username already exist')
-            }
-        })
-        
-         
+      socket.emit('user-join', userData)
+      socket.on('user-list', (condition) => {
+        if (condition) {
+          localStorage.setItem('username', this.username)
+          this.$router.push('/game')
+        } else {
+          console.log('user already exist')
+        }
+      })
     }
   },
   created() {
     if(localStorage.username) {
-      this.$router.push('game')
+      this.$router.push('/game')
     }
   }
 }
