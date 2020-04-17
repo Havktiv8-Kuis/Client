@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2'
 import socket from '../config/socket'
 import Card from '../components/Card'
 // import socket from '../config/socket' 
@@ -62,10 +63,10 @@ export default {
     // },
     logout () {
       const name = localStorage.username
+      this.$router.push('/')
       socket.emit('exit',name)
-        localStorage.removeItem('username')
+      localStorage.removeItem('username')
         // localStorage.clear()
-        this.$router.push('/')
     },
     checkAnswer () {
       if (this.word.answer.toLowerCase() === this.answer.toLowerCase()) {
@@ -78,9 +79,15 @@ export default {
         socket.on('user-join',(data)=>{
             this.userdata = data
         })
-        this.getWord()
+        let user = this.userdata.find(el => el.username == localStorage.username)
+        if (user.score >= 50) {
+          this.winner()
+        } else {
+          this.getWord()
+        }
       } else {
         console.log('Wrong answer')
+        this.answer = ''
       }
     },
     rightAnswer () {
@@ -93,6 +100,18 @@ export default {
       socket.on('user-join',(data)=>{
           this.userdata = data
       })
+    },
+    winner () {
+      socket.emit('winner', localStorage.username)
+      socket.on('winner', (name) => {
+        Swal.fire({
+          position: 'top',
+          icon: 'success',
+          title: `The winner is ${name}`,
+          showConfirmButton: false,
+          timer: 5000
+        })
+      })
     }
   },
   created() {
@@ -101,7 +120,7 @@ export default {
     } else {
       socket.on('user-join',(data)=>{
         this.userdata = data
-        console.log(this.userdata)
+        // console.log(this.userdata)
         if (this.userdata.length > 1) {
           this.getWord()
         }
