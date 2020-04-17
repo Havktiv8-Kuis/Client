@@ -40,11 +40,13 @@ export default {
     }
   },
   components: {
+
   },
   methods: {
     login () {
-      const userData = {
-        name: this.username
+      const userdata = {
+        username: this.username,
+        score: 0
       }
       socket.emit('user-join', userData)
       socket.on('user-list', (condition) => {

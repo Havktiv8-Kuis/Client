@@ -1,18 +1,30 @@
 <template>
   <div class="card">
-    <img src="../assets/user.svg" alt="user-image">
-    <h3>Player 1</h3>
-    <h5>Score:</h5>
-    <p>70</p>
+        <img src="../assets/user.svg" alt="user-image">
+        <h3>{{user.username}}</h3>
+        <h5>Score:</h5>
+        <p>{{user.score}}</p>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'Card'
+import socket from '../config/socket'
+export default { 
+  name: 'Card',
+  props:['user'],
+  data () {
+    return {
+        userdata: []
+    }
+  },
+  created () {
+        socket.on('user-join',(data)=>{
+            this.userdata = data
+        })
+    }
 }
 </script>
-
+    
 <style scoped>
 .card{
   width: 12rem;
