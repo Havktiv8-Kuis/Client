@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     login () {
-      const userdata = {
+      const userData = {
         username: this.username,
         score: 0
       }
