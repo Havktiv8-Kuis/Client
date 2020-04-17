@@ -62,10 +62,10 @@ export default {
     //   }
     // },
     logout () {
-      const name = localStorage.username
-      this.$router.push('/')
-      socket.emit('exit',name)
+      // const name = localStorage.username
+      // socket.emit('exit',name)
       localStorage.removeItem('username')
+      this.$router.push('/')
         // localStorage.clear()
     },
     checkAnswer () {
